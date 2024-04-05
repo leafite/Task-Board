@@ -60,9 +60,31 @@ function handleAddTask(event) {
        alert("Complete Task Form");
    }
 }
-
 // Todo: create a function to handle deleting a task
-
-// Todo: create a function to handle dropping a task into a new status lane
-
-// Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+function handleDeleteTask(event) {
+    let taskId = $(this).data("task-id");
+    taskList = taskList.filter(task => task.id !== taskId);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+    renderTaskList();
+ }
+ // Todo: create a function to handle dropping a task into a new status lane
+ function handleDrop(event, ui) {
+    let taskId = ui.draggable.attr("id").split("-")[1];
+    let newStatus = $(this).attr("id");
+    let taskIndex = taskList.findIndex(task => task.id == taskId);
+    taskList[taskIndex].status = newStatus;
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+    renderTaskList();
+ }
+ // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+ $(document).ready(function () {
+    renderTaskList();
+    $("#taskForm").submit(handleAddTask);
+    $(document).on("click", ".delete-btn", handleDeleteTask);
+    $(".lane").droppable({
+        accept: ".task-card",
+        drop: handleDrop
+    });
+    $("#dueDate").datepicker();
+ });
+ 
